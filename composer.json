@@ -12,7 +12,7 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii2"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.6.0",
         "yiisoft/yii2": "~2.0.14",
@@ -27,7 +27,12 @@
         "dmstr/yii2-adminlte-asset": "^2.1",
         "kartik-v/yii2-widget-select2": "^2.2",
         "yii2mod/yii2-rbac": "*",
-        "moonlandsoft/yii2-phpexcel": "*"
+        "moonlandsoft/yii2-phpexcel": "*",
+        "lis-dev/nova-poshta-api-2": "^0.1.6",
+        "yiisoft/yii2-imagine": "^2.3",
+        "dektrium/yii2-user": "0.9.*@dev",
+        "yiisoft/yii2-authclient": "~2.1.7",
+        "kartik-v/yii2-widget-datetimepicker": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

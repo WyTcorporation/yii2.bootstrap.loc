@@ -9,7 +9,7 @@
  */
 
 $language = Yii::$app->sourceLanguage;
-$name = unserialize($category['name'])[$language];
+$name = $category['name'];
 
 ?>
 <option value="<?= $category['id'] ?>" <?= $category['id'] == $this->model->id ? 'disabled' : '' ?> <?= $category['id'] == $this->model->category_id ? 'selected' : '' ?>><?= $tab .$name ?></option>

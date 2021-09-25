@@ -85,7 +85,7 @@ $this->registerJs(
 <!--    --><?//= $form->field($model, 'phone')->textInput(['value' => isset($phone) ? $phone : '', 'maxlength' => true, 'placeholder' => 'Номер телефона']) ?>
 
         <?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
-            'mask' => '999-999-9999',
+            'mask' => '(999)-999-99-99',
             'value' => isset($phone) ? str_replace('_','',str_replace('-','',$phone)) : ''
         ]) ?>
 

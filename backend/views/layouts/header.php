@@ -3,11 +3,14 @@ use yii\helpers\Html;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
+
+$user = Yii::$app->authManager->getRolesByUser(Yii::$app->user->getId());
+
 ?>
 
 <header class="main-header">
 
-    <?= Html::a('<span class="logo-mini">APP</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
+    <?= Html::a('<span class="logo-mini">LIT</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
 
     <nav class="navbar navbar-static-top" role="navigation">
 
@@ -18,7 +21,7 @@ use yii\helpers\Html;
         <div class="navbar-custom-menu">
 
             <ul class="nav navbar-nav">
-
+                <?php if($user['superAdmin']->name == 'superAdmin') : ?>
                 <!-- Messages: style can be found in dropdown.less-->
                 <li class="dropdown messages-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -226,13 +229,16 @@ use yii\helpers\Html;
                     </ul>
                 </li>
                 <!-- User Account: style can be found in dropdown.less -->
-
+                <?php endif; ?>
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <?php if($user['superAdmin']->name == 'superAdmin') : ?>
                         <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <?php endif; ?>
+                        <span class="hidden-xs"><?=Yii::$app->user->identity->username?></span>
                     </a>
                     <ul class="dropdown-menu">
+                        <?php if($user['superAdmin']->name == 'superAdmin') : ?>
                         <!-- User image -->
                         <li class="user-header">
                             <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
@@ -243,6 +249,7 @@ use yii\helpers\Html;
                                 <small>Member since Nov. 2012</small>
                             </p>
                         </li>
+
                         <!-- Menu Body -->
                         <li class="user-body">
                             <div class="col-xs-4 text-center">
@@ -255,11 +262,14 @@ use yii\helpers\Html;
                                 <a href="#">Friends</a>
                             </div>
                         </li>
+                        <?php endif; ?>
                         <!-- Menu Footer-->
                         <li class="user-footer">
+                            <?php if($user['superAdmin']->name == 'superAdmin') : ?>
                             <div class="pull-left">
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
                             </div>
+                            <?php endif; ?>
                             <div class="pull-right">
                                 <?= Html::beginForm(['/site/logout'], 'post')
                                 . Html::submitButton(
@@ -270,11 +280,12 @@ use yii\helpers\Html;
                         </li>
                     </ul>
                 </li>
-
+                <?php if($user['superAdmin']->name == 'superAdmin') : ?>
                 <!-- User Account: style can be found in dropdown.less -->
                 <li>
                     <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                 </li>
+                <?php endif; ?>
             </ul>
         </div>
     </nav>

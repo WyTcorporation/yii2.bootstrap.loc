@@ -15,7 +15,7 @@ return [
         'languages',
     ],
     'controllerNamespace' => 'frontend\controllers',
-//    'language' => 'ru-Ru',
+    'language' => 'ru-Ru',
 //меняя языки не забывать менять доступ бд и в модальном окне карточки + Бек Options
     'sourceLanguage' => $params['sourceLanguage'],
     'defaultRoute' => 'category/index',
@@ -27,21 +27,19 @@ return [
             'default_language' => $params['sourceLanguage'], //основной язык (по-умолчанию)
             'show_default' => false, //true - показывать в URL основной язык, false - нет
         ],
+        'redactor' => 'yii\redactor\RedactorModule',
+        'class' => 'yii\redactor\RedactorModule',
+        'uploadDir' => '@webroot/uploads',
+        'uploadUrl' => '/hello/uploads',
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'enableUnconfirmedLogin' => TRUE,
+            'confirmWithin' => 21600,
+            'cost' => 12,
+            'admins' => ['admin']
+        ],
     ],
     'components' => [
-        'i18n' => [
-            'translations' => [
-                'app*' => [
-                    'class' => 'yii\i18n\PhpMessageSource',
-                    //'forceTranslation' => true,
-                    'basePath' => '@common/messages',
-                    'fileMap' => [
-                        'app' => 'app.php',
-                        'app/error' => 'error.php',
-                    ],
-                ],
-            ],
-        ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
             'baseUrl' => '',
@@ -76,21 +74,62 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             //Включить что бы правильно работали урлы мультиязычности (Но после этого debug панель не работает)
-//            'class' => 'common\components\UrlManager',
+            //'class' => 'common\components\UrlManager',
             'rules' => [
                 'languages' => 'languages/default/index',
+                'news' => 'site/index',
+                'news/<slug>' => 'site/news',
                 'login' => 'site/login',
                 'logout' => 'site/logout',
                 'signup' => 'site/signup',
+                'wishlist' => 'wishlist/view',
+                'cart' => 'cart/view',
+                'profile' => 'profile/index',
+                'contacts' => 'site/contact',
                 //Убираею гет параметр пагинации (Должен быть выше основного)
 //                'category/<id:\d+>/page/<page:\d+>' => 'category/view',
 //                'category/<id:\d+>' => 'category/view',
                 'category/<slug>/page/<page:\d+>' => 'category/view',
                 'category/<slug>' => 'category/view',
                 'search' => 'category/search',
+                'new' => 'product/new',
+                'sale' => 'product/sale',
                 'product/<slug>' => 'product/view',
+                '<slug>' => 'pages/index',
             ],
         ],
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'google' => [
+                    'class' => 'yii\authclient\clients\Google',
+                    'clientId' => $params['google_client_id'],
+                    'clientSecret' => $params['google_client_secret'],
+                    'returnUrl' => 'https://yii2.shop.ua/site/auth?authclient=google'
+                ],
+                'facebook' => [
+                    'class' => 'yii\authclient\clients\Facebook',
+                    'clientId' => $params['facebook_client_id'],
+                    'clientSecret' => $params['facebook_client_secret'],
+                    'returnUrl' => 'https://yii2.shop.ua/site/auth?authclient=facebook'
+                ],
+//                'github' => [
+//                    'class' => 'yii\authclient\clients\GitHub',
+//                    'clientId' => 'facebook_client_id',
+//                    'clientSecret' => 'facebook_client_secret',
+//                ],
+//                'linkedin' => [
+//                    'class' => 'yii\authclient\clients\LinkedIn',
+//                    'clientId' => 'facebook_client_id',
+//                    'clientSecret' => 'facebook_client_secret',
+//                ],
+//                'twitter' => [
+//                    'class' => 'yii\authclient\clients\Twitter',
+//                    'clientId' => 'facebook_client_id',
+//                    'clientSecret' => 'facebook_client_secret',
+//                ],
+            ],
+        ]
     ],
     'params' => $params,
 ];

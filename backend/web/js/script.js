@@ -30,19 +30,20 @@ $("document").ready(function () {
 //     });
 // });
 
-// $('#search-characteristics').on('change', function(e) {
-//     e.preventDefault();
-//     var value = $(this).val();
-//     console.log('value '+ value);
-//     $.ajax({
-//         type: "GET",
-//         url: "/search-options",
-//         context: {'id': id},
-//         success: function(msg){
-//             console.log('success '+ msg);
-//         },
-//         error: function(msg){
-//             console.log('error '+ msg);
-//         }
-//     });
-// });
+$('#currencies').on('change', function(e) {
+    e.preventDefault();
+    var value = $(this).val();
+    console.log(value);
+    $.ajax({
+        type: "POST",
+        url: "/admin/api/v1/currency",
+        data: {'value': value},
+        success: function(msg){
+            console.log('success '+ msg);
+            location.reload();
+        },
+        error: function(msg){
+            console.log('error '+ msg);
+        }
+    });
+});

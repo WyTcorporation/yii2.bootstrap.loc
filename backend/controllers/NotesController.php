@@ -2,9 +2,9 @@
 
 namespace backend\controllers;
 
+use backend\models\notes\NotesSearch;
 use Yii;
-use backend\models\Notes;
-use backend\models\NotesSearch;
+use backend\models\notes\Notes;
 use backend\controllers\AppAdminController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;

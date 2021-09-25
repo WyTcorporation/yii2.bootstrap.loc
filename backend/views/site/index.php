@@ -6,6 +6,7 @@ use yii\helpers\Html;
 
 $this->title =  Html::encode(Yii::$app->name);
 
+
 ?>
 <div class="site-index">
 <h1 class="text-danger">Идеи сюда</h1>
@@ -36,4 +37,5 @@ $this->title =  Html::encode(Yii::$app->name);
 //mklnk();
 
     })();
+
 </script>

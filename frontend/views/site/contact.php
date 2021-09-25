@@ -1,45 +1,72 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $form yii\bootstrap\ActiveForm */
-/* @var $model \frontend\models\ContactForm */
+/* @var $shops */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\captcha\Captcha;
+use yii\widgets\Breadcrumbs;
 
-$this->title = 'Contact';
+$this->title = Yii::t('frontend', 'Contacts');
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
-<div class="site-contact">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        If you have business inquiries or other questions, please fill out the following form to contact us. Thank you.
-    </p>
-
+<div id="information-contact" class="container">
+    <?=
+    Breadcrumbs::widget(
+        [
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ]
+    ) ?>
     <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'contact-form']); ?>
+        <div id="content" class="col-sm-12">
+            <h1><?= Yii::t('frontend', 'Contacts'); ?></h1>
+            <div>
+                <div class="row" style="font-family: Arial;">
+                    <?php if (isset($shops) && !empty($shops)): ?>
+                        <?php foreach ($shops as $shop) : ?>
+                            <div class="col-md-4">
+                                <p style="font-size: 22px; color:#397b21;font-weight: bold;font-family: Arial Black;">
+                                    <u><?= $shop['name'] ?></u>
+                                </p>
+                                <?php if (isset($shop['phones']) && !empty($shop['phones'])): ?>
+                                    <?php foreach ($shop['phones'] as $phone) : ?>
+                                        <p style="font-size: 15px;">
+                                            <img src="/images/tel.png"
+                                                 style="width: 25px;"
+                                            >&nbsp; <?= $phone ?><br></p>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <p style="font-size: 15px;">
+                                    <img src="/images/mail.png"
+                                         style="width: 25px;"
+                                    >&nbsp; &nbsp;<?= $shop['email']; ?></p>
+                                <?php if (isset($shop['date']) && !empty($shop['date'])): ?>
+                                    <p style="font-size: 15px;">
+                                        <img src="/images/work.jpg"
+                                             style="width: 25px;"
+                                        >
+                                    <span style="text-align: left;position: absolute;left: 50px;">
+                                        <?php foreach ($shop['date'] as $key => $date) : ?>
+                                            <?= $key; ?>  <?= $date; ?>
+                                        <?php endforeach; ?>
+                                    </span>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+                    <div class="col-md-8">
+                        <?= $shop['location']; ?>
+                    </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
-                <?= $form->field($model, 'name')->textInput(['autofocus' => true]) ?>
-
-                <?= $form->field($model, 'email') ?>
-
-                <?= $form->field($model, 'subject') ?>
-
-                <?= $form->field($model, 'body')->textarea(['rows' => 6]) ?>
-
-                <?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [
-                    'template' => '<div class="row"><div class="col-lg-3">{image}</div><div class="col-lg-6">{input}</div></div>',
-                ]) ?>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Submit', ['class' => 'btn btn-primary', 'name' => 'contact-button']) ?>
                 </div>
 
-            <?php ActiveForm::end(); ?>
+            </div>
+            <div style="margin: 20px 0;">
+
+            </div>
         </div>
     </div>
-
 </div>

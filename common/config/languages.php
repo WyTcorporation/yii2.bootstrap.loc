@@ -1,20 +1,20 @@
 <?php
-use backend\models\Languages;
-use yii\db\Command;
-
 
 function get_languages() {
+    $db = require(__DIR__ . '/main-local.php');
 
     $connection  = new yii\db\Connection([
-        'dsn' => 'mysql:host=localhost;dbname=yii2.shop.loc',
-        'username' => 'root',
-        'password' => 'root',
-        'charset' => 'utf8',
+        'dsn' => $db['components']['db']['dsn'],
+        'username' => $db['components']['db']['username'],
+        'password' => $db['components']['db']['password'],
+        'charset' => $db['components']['db']['charset'],
     ]);
-    $connection->open();
-    $sql = "SELECT * FROM languages WHERE active = 1";
+
+
+    $sql = "SELECT * FROM languages WHERE active = '1'";
 
     $command = $connection->createCommand($sql);
+
     $find_languages = $command->queryAll();
 
     $languages = [];

@@ -11,7 +11,6 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'name' => 'Моя Система',
     'language' => $params['sourceLanguage'],
     'sourceLanguage' => $params['sourceLanguage'],
 //    'layout' => 'admin',
@@ -29,17 +28,6 @@ return [
         //Форматируем дату по всему сайту
 //        'formatter'=>[
 //            'datetimeFormat' => 'php:d F H:i:s'
-//        ],
-        //Переподключение js не илспользуя его в AppAsset
-//        'assetManager' => [
-//            'bundles' => [
-//                'yii\web\JqueryAsset' => [
-//                    'sourcePath' => null,   // не опубликовывать комплект
-//                    'js' => [
-//                        'js/jquery-1.11.1.min.js',
-//                    ]
-//                ],
-//            ],
 //        ],
         'request' => [
             'parsers' => [
@@ -101,6 +89,7 @@ return [
                 'category/<id:\d+>' => 'category/view',
                 'product/<id:\d+>' => 'product/view',
 
+
                 [
                     //Пример
                     //GET http://yii2.shop.loc/admin/api/v1/statistics
@@ -118,36 +107,77 @@ return [
                     'extraPatterns' => [
                         'GET /' => 'index',
                     ],
+                ],
+                [
+                    //Пример
+                    //POST http://yii2.shop.loc/admin/api/v1/call-back
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => ['api/v1/call-back'],
+                    'extraPatterns' => [
+                        'POST /' => 'index',
+                        'POST /search' => 'search',
+                    ],
+                ],
+                [
+                    //Пример
+                    //POST http://yii2.shop.loc/admin/api/v1/nova-poshta-api-list
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => ['api/v1/nova-poshta-api-list'],
+                    'extraPatterns' => [
+                        'POST /cities' => 'cities',
+                        'POST /regions' => 'regions',
+                        'POST /warehouses' => 'warehouses',
+                    ],
+                ],
+                [
+                    //Пример
+                    //POST http://yii2.shop.loc/admin/api/v1/currency
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => ['api/v1/currency'],
+                    'extraPatterns' => [
+                        'POST /' => 'index',
+                    ],
+                ],
+                [
+                    //Пример
+                    //GET http://yii2.shop.loc/admin/api/v1/users
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => ['api/v1/users'],
+                    'extraPatterns' => [
+                        'GET /' => 'index',
+                    ],
+                ],
+                [
+                    //Пример
+                    //GET http://yii2.shop.loc/admin/api/v1/products
+                    'class' => \yii\rest\UrlRule::class,
+                    'controller' => ['api/v1/products'],
+                    'extraPatterns' => [
+                        'GET /' => 'index',
+                        'GET /get-product' => 'get-product',
+                    ],
                 ]
             ],
         ],
     ],
     'controllerMap' => [
-        // объявляет "account" контроллер, используя название класса
-//            'test' => 'app\controllers\SiteController',
-
-        // объявляет "article" контроллер, используя массив конфигурации
-//            'article' => [
-//                'class' => 'app\controllers\PostController',
-//                'enableCsrfValidation' => false,
-//            ],
         'elfinder' => [
             'class' => 'mihaildev\elfinder\PathController',
             'access' => ['@'],
             'root' => [
-                'baseUrl'=>'/uploads',
-                'basePath'=>'@frontend/web/uploads',
+                'baseUrl' => '/uploads',
+                'basePath' => '@frontend/web/uploads',
                 'name' => 'Uploads'
+            ],
+            'watermark' => [
+                'source' => __DIR__ . '/logo.png', // Path to Water mark image
+                'marginRight' => 5,          // Margin right pixel
+                'marginBottom' => 5,          // Margin bottom pixel
+                'quality' => 95,         // JPEG image save quality
+                'transparency' => 70,         // Water mark image transparency ( other than PNG )
+                'targetType' => IMG_GIF | IMG_JPG | IMG_PNG | IMG_WBMP, // Target image formats ( bit-field )
+                'targetMinPixel' => 200         // Target image minimum pixel size
             ]
-//            'watermark' => [
-//                'source'         => __DIR__.'/logo.png', // Path to Water mark image
-//                'marginRight'    => 5,          // Margin right pixel
-//                'marginBottom'   => 5,          // Margin bottom pixel
-//                'quality'        => 95,         // JPEG image save quality
-//                'transparency'   => 70,         // Water mark image transparency ( other than PNG )
-//                'targetType'     => IMG_GIF|IMG_JPG|IMG_PNG|IMG_WBMP, // Target image formats ( bit-field )
-//                'targetMinPixel' => 200         // Target image minimum pixel size
-//            ]
         ]
     ],
     'params' => $params,

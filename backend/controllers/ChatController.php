@@ -2,11 +2,11 @@
 
 namespace backend\controllers;
 
+use backend\models\chat\Chat;
 use Yii;
 use backend\controllers\AppAdminController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use backend\models\Chat;
 use common\models\User;
 
 /**
@@ -34,7 +34,7 @@ class ChatController extends AppAdminController
     {
         $my = Yii::$app->user->identity;
 
-        $users = User::find()->where(['!=', 'id', $my->id])->all();
+        $users = User::find()->where('id != :id', ['id'=>$my->id])->all();
 
         $model = new Chat();
 

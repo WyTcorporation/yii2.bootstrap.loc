@@ -6,5 +6,5 @@
  * Date : 22.08.2021
  */
 return [
-    'Error' => 'Error2',
+    'The requested page does not exist.' => 'Запрошенная страница не существует.',
 ];

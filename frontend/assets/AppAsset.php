@@ -12,22 +12,22 @@ class AppAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
+        'https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i,900&subset=cyrillic',
+        'css/bootstrap.min.css',
         'css/font-awesome.min.css',
-        'css/prettyPhoto.css',
-        'css/price-range.css',
-        'css/animate.css',
-        'css/main.css',
-        'css/responsive.css',
-        'css/site.css',
+        'css/swiper.min.css',
+        'css/slick.css',
+        'css/articles.css',
+        'css/css(1).css',
+        'css/css.css',
+        'css/style.css',
     ];
     public $js = [
+        'js/bootstrap.min.js',
         'js/jquery.scrollUp.min.js',
-        'js/price-range.js',
-        'js/jquery.prettyPhoto.js',
-        'js/jquery.accordion.js',
-        'js/jquery.cookie.js',
-        'js/main.js',
+        'js/slick.js',
         'js/script.js',
+        'js/NovaPoshta.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use dmstr\widgets\Alert;
 
+$user = Yii::$app->authManager->getRolesByUser(Yii::$app->user->getId());
+
 ?>
 <div class="content-wrapper">
     <section class="content-header">
@@ -44,7 +46,7 @@ use dmstr\widgets\Alert;
     <strong>Copyright &copy; <?= Html::encode(Yii::$app->name) ?>  2018-<?= date('Y') ?> <a target="_blank" href="http://lockit.com">LockIT Studio</a>.</strong> All rights
     reserved.
 </footer>
-
+<?php if($user['superAdmin']->name == 'superAdmin') : ?>
 <!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark">
     <!-- Create the tabs -->
@@ -235,3 +237,4 @@ use dmstr\widgets\Alert;
 <!-- Add the sidebar's background. This div must be placed
      immediately after the control sidebar -->
 <div class='control-sidebar-bg'></div>
+<?php endif; ?>

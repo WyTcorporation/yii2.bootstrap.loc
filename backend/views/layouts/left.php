@@ -1,7 +1,11 @@
+<?php
+$user = Yii::$app->authManager->getRolesByUser(Yii::$app->user->getId());
+?>
+
 <aside class="main-sidebar">
 
     <section class="sidebar">
-
+        <?php if($user['superAdmin']->name == 'superAdmin') : ?>
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
@@ -18,7 +22,7 @@
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
                 <input type="text" name="q" class="form-control" placeholder="Search..."/>
-              <span class="input-group-btn">
+                <span class="input-group-btn">
                 <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i>
                 </button>
               </span>
@@ -26,65 +30,129 @@
         </form>
         <!-- /.search form -->
 
+        <?php endif; ?>
         <?= dmstr\widgets\Menu::widget(
             [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+                'options' => ['class' => 'sidebar-menu tree', 'data-widget' => 'tree'],
                 'items' => [
-                    ['label' => 'Мое меню', 'options' => ['class' => 'header']],
-                    ['label' => 'Главная', 'icon' => 'file-code-o', 'url' => ['/site/index']],
+                    //['label' => 'Мое меню', 'options' => ['class' => 'header']],
+                    ['label' => Yii::t('backend/links', 'Home'), 'icon' => 'file-code-o', 'url' => ['/site/index']],
                     [
-                        'label' => 'Категории',
+                        'label' => Yii::t('backend/links', 'Categories'),
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            ['label' => 'Список категорий', 'icon' => 'file-code-o', 'url' => ['/category/index'],],
-                            ['label' => 'Создать категорию', 'icon' => 'file-code-o', 'url' => ['/category/create'],],
-                        ],
-                    ],
-                       [
-                        'label' => 'Характеристики',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => 'Список характеристик', 'icon' => 'file-code-o', 'url' => ['/characteristics/index'],],
-                            ['label' => 'Создать характеристику/ки', 'icon' => 'file-code-o', 'url' => ['/characteristics/create'],],
-                             ['label' => 'Список Опций', 'icon' => 'file-code-o', 'url' => ['/characteristics-options/index'],],
-                            ['label' => 'Создать Опцию', 'icon' => 'file-code-o', 'url' => ['/characteristics-options/create'],],
+                            ['label' => Yii::t('backend/links', 'Category list'), 'icon' => 'file-code-o', 'url' => ['/categories/categories/index'],],
+                            ['label' => Yii::t('backend/links', 'Create a category'), 'icon' => 'file-code-o', 'url' => ['/categories/categories/create'],],
                         ],
                     ],
                     [
-                        'label' => 'Заказы',
+                        'label' => Yii::t('backend/links', 'Characteristics'),
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            ['label' => 'Список заказов', 'icon' => 'file-code-o', 'url' => ['/order/index'],],
-                            ['label' => 'Создать заказ Не работает, работает Обновление', 'icon' => 'file-code-o', 'url' => ['/order/create'],],
+                            ['label' => Yii::t('backend/links', 'Characteristic list'), 'icon' => 'file-code-o', 'url' => ['/characteristics/characteristics/index'],],
+                            ['label' => Yii::t('backend/links', 'Create characteristic'), 'icon' => 'file-code-o', 'url' => ['/characteristics/characteristics/create'],],
+                            ['label' => Yii::t('backend/links', 'Option List'), 'icon' => 'file-code-o', 'url' => ['/characteristics/characteristics-options/index'],],
+                            ['label' => Yii::t('backend/links', 'Create Option'), 'icon' => 'file-code-o', 'url' => ['/characteristics/characteristics-options/create'],],
+                            ['label' => Yii::t('backend/links', 'Model List'), 'icon' => 'file-code-o', 'url' => ['/products/products-models/index'],],
+                            ['label' => Yii::t('backend/links', 'Create Model'), 'icon' => 'file-code-o', 'url' => ['/products/products-models/create'],],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('backend/links', 'Products'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => Yii::t('backend/links', 'Product list'), 'icon' => 'file-code-o', 'url' => ['/products/products/index'],],
+                            ['label' => Yii::t('backend/links', 'Dynamic search'), 'icon' => 'file-code-o', 'url' => ['products/products/search-session'],'visible' => $user['superAdmin']->name == 'superAdmin' ? true : false,],
+                            ['label' => Yii::t('backend/links', 'Create a product'), 'icon' => 'file-code-o', 'url' => ['/products/products/create'],],
+                            ['label' => Yii::t('backend/links', 'Comments'), 'icon' => 'file-code-o', 'url' => ['/products/products-comments/index'],],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('backend/links', 'Orders'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => Yii::t('backend/links', 'Order list'), 'icon' => 'file-code-o', 'url' => ['/orders/orders/index'],],
+                            ['label' => Yii::t('backend/links', 'Create order'), 'icon' => 'file-code-o', 'url' => ['/orders/orders/create'],],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('backend/links', 'News'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                            ['label' =>  Yii::t('backend/links', 'News List'), 'icon' => 'file-code-o', 'url' => ['/blog/blog/index'],],
+                            ['label' => Yii::t('backend/links', 'Create news'), 'icon' => 'file-code-o', 'url' => ['/blog/blog/create'],],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('backend/links', 'Pages'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => Yii::t('backend/links', 'List of pages'), 'icon' => 'file-code-o', 'url' => ['/pages/pages/index'],],
+                            ['label' => Yii::t('backend/links', 'Create a page'), 'icon' => 'file-code-o', 'url' => ['/pages/pages/create'],],
+                        ],
+                    ],
+                    ['label' => 'Call Back', 'icon' => 'file-code-o', 'url' => ['/callback/call-back/index']],
+                    ['label' => Yii::t('backend/links', 'Users'), 'icon' => 'file-code-o', 'url' => ['/user/user/index']],
+                    [
+                        'label' => Yii::t('backend/links', 'Settings'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        //'visible' => $user['superAdmin']->name == 'superAdmin' ? true : false,
+                        'items' => [
+                            ['label' => Yii::t('backend/links', 'Languages'), 'icon' => 'file-code-o', 'url' => ['/options/options/languages'],],
+                            ['label' => Yii::t('backend/links', 'Import / Excel'), 'icon' => 'file-code-o', 'url' => ['/csv/excel'],],
+                            ['label' => Yii::t('backend/links', 'Shop'), 'icon' => 'file-code-o', 'url' => ['/options/options/shop'],],
+                            ['label' => Yii::t('backend/links', 'Promotions'), 'icon' => 'file-code-o', 'url' => ['/options/options/stock'],],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('backend/links', 'Settings'),
+                        'icon' => 'share',
+                        'url' => '#',
+                        'visible' => $user['superAdmin']->name == 'superAdmin' ? true : false,
+                        'items' => [
+                            [
+                                'label' => Yii::t('backend/links', 'Setting up Translations'),
+                                'icon' => 'share',
+                                'url' => '#',
+                                'items' => [
+                                    ['label' => Yii::t('backend/links', 'Type'), 'icon' => 'file-code-o', 'url' => ['/translations/type/index'],],
+                                    ['label' => Yii::t('backend/links', 'Content'), 'icon' => 'file-code-o', 'url' => ['/translations/content/index'],],
+                                    ['label' => Yii::t('backend/links', 'Languages'), 'icon' => 'file-code-o', 'url' => ['/translations/languages/index'],],
+                                    ['label' => Yii::t('backend/links', 'Translations'), 'icon' => 'file-code-o', 'url' => ['/translations/translations/index'],],
+                                ],
+                            ],
+                            [
+                                'label' => Yii::t('backend/links', 'Setting options'),
+                                'icon' => 'share',
+                                'url' => '#',
+                                'items' => [
+                                    ['label' => Yii::t('backend/links', 'Options'), 'icon' => 'file-code-o', 'url' => ['/options/options/index'],],
+                                    ['label' => Yii::t('backend/links', 'Create Option'), 'icon' => 'file-code-o', 'url' => ['/options/options/create'],],
+                                ],
+                            ],
+                            [
+                                'label' => Yii::t('backend/links', 'Setting currencies'),
+                                'icon' => 'share',
+                                'url' => '#',
+                                'items' => [
+                                    ['label' => Yii::t('backend/links', 'Currency'), 'icon' => 'file-code-o', 'url' => ['/currency/currency/index'], ],
+                                    ['label' => Yii::t('backend/links', 'Create currency'), 'icon' => 'file-code-o', 'url' => ['/currency/currency/create'],],
+                                ],
+                            ],
+
                         ],
                     ],
 
-                    [
-                        'label' => 'Продукты',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => 'Список продуктов', 'icon' => 'file-code-o', 'url' => ['/product/index'],],
-                            ['label' => 'Диномический поиск', 'icon' => 'file-code-o', 'url' => ['/product/search-session'],],
-                            ['label' => 'Создать продукт', 'icon' => 'file-code-o', 'url' => ['/product/create'],],
-                        ],
-                    ],
-
-//                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
-                    [
-                        'label' => 'Настройки',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => 'Языки', 'icon' => 'file-code-o', 'url' => ['/options/languages'],],
-                            ['label' => 'Импорт/Excel', 'icon' => 'file-code-o', 'url' => ['/csv/excel'],],
-                        ],
-                    ],
                     [
                         'label' => 'Мои Приколы',
+                        'visible' => $user['superAdmin']->name == 'superAdmin' ? true : false,
                         'icon' => 'times',
                         'url' => '#',
                         'items' => [
@@ -108,6 +176,7 @@
                     ],
                     [
                         'label' => 'Опции',
+                        'visible' => $user['superAdmin']->name == 'superAdmin' ? true : false,
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [

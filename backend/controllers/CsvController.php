@@ -10,13 +10,14 @@
 
 namespace backend\controllers;
 
-use backend\models\CharacteristicsOptions;
-use backend\models\CharacteristicsProducts;
+use backend\models\characteristics\CharacteristicsOptions;
+use backend\models\characteristics\CharacteristicsProducts;
+use backend\models\translations\Translations;
 use Yii;
 use backend\controllers\AppAdminController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use backend\models\Product;
+use backend\models\products\Products;
 use backend\models\Csv;
 use yii\web\UploadedFile;
 
@@ -75,12 +76,12 @@ class CsvController extends AppAdminController
                                 $new = $itemes[6];
                                 $sale = $itemes[7];
 
-                                $product = Product::findOne(['name' => $name]);
+                                $product = Products::findOne(['name' => $name]);
                                 if (isset($product) && !empty($product)) {
                                     $product->price = $price;
                                     $product->save();
                                 } else {
-                                    $product = new Product();
+                                    $product = new Products();
                                     $product->category_id = $category_id;
                                     $product->name = $name;
                                     $product->price = $price;
@@ -110,7 +111,7 @@ class CsvController extends AppAdminController
                 $title = ['category_id', 'name', 'price', 'content', 'img', 'hit', 'new', 'sale'];
                 fputcsv($fp, $title, $delimiter = ';');
 
-                $products = Product::find()->all();
+                $products = Products::find()->all();
                 foreach ($products as $product) {
                     $product_csv = [$product->category_id, $product->name, $product->price, $product->content, $product->img, $product->hit, $product->new, $product->sale];
                     fputcsv($fp, $product_csv, $delimiter = ';');
@@ -160,9 +161,15 @@ class CsvController extends AppAdminController
         $model = new Csv();
         $message = null;
         $params = Yii::$app->params['languages'];
+        $language = Yii::$app->sourceLanguage;
         if (Yii::$app->request->isPjax) {
+            $typeCharacteristicsOptions = 'characteristics-options';
+            $paramsCharacteristicsOptions = $this->createTranslationArray($language, $typeCharacteristicsOptions, 'name');
 
-            set_time_limit(500);
+            $typeProducts = 'products';
+            $paramsProducts = $this->createTranslationArray($language, $typeProducts, 'name');
+
+            set_time_limit(1500);
             if ($model->imageFile = UploadedFile::getInstance($model, 'imageFile')) {
                 $path = $model->upload(date("d-m-Y H:i:s"));
                 if ($path) {
@@ -170,57 +177,67 @@ class CsvController extends AppAdminController
                     $data = \moonland\phpexcel\Excel::import($pathToFile);
                     $message = '';
                     foreach ($data as $key => $value) {
-                        $brand = $value['Товар бренд (наимен)'];
-                        $vendor_code = $value['Товар код'];
-                        $name = $value['Товар нименов.'];
-                        $price = $value['!Цена'];
+                        $brand = trim($value['Товар бренд (наимен)']);
+                        $vendor_code = trim($value['Товар код']);
+                        $name = trim($value['Товар нименов.']);
+                        $price = trim($value['!Цена']);
+                        if (isset($name) && !empty($name)) {
+                            $array[$key]['brand'] = $brand;
+                            $array[$key]['vendor_code'] = $vendor_code;
+                            $array[$key]['name'] = $name;
+                            $array[$key]['price'] = str_replace(',', '', $price);
 
-                        $array[$key]['brand'] = $brand;
-                        $array[$key]['vendor_code'] = $vendor_code;
-                        $array[$key]['name'] = $name;
-                        $array[$key]['price'] = str_replace(',','',$price);
+                            $product = Products::findOne(['vendor_code' => $vendor_code]);
+                            if (!isset($product) && empty($product)) {
+                                $product = new Products();
 
-                        //$product = Product::findOne(['vendor_code' => $vendor_code]);
-//                        if (!isset($product) && empty($product)) {
-//                            $product = new Product();
-//                        }
+                                foreach ($params as $keyParams => $param) {
+                                    $names['field_name'][$param] = $name;
+                                    $names['field_content'][$param] = $name;
+                                    $names['field_keywords'][$param] = $name;
+                                    $names['field_description'][$param] = $name;
+                                    $brands['field_name'][$param] = $brand;
+                                }
 
-                        foreach ($params as $keyParams => $param) {
-                            $names[$param]['name'] = $name;
-                            $names[$param]['content'] = $name;
-                            $names[$param]['keywords'] = $name;
-                            $names[$param]['description'] = $name;
-                            $brands[$param] = $brand;
-                        }
+                                $brandTranslate = Translations::findOne(['content' => Yii::$app->params['searchBrand']]);
+                                $characteristic_id = $brandTranslate->translation_id;
+                                if (isset($characteristic_id) && !empty($characteristic_id)) {
+                                    $translations = Translations::findOne(['content' => $brand]);
+                                    $type = 'characteristics-options';
+                                    if (!isset($translations) && empty($translations)) {
+                                        $characteristicsOptions = new CharacteristicsOptions();
+                                        $characteristicsOptions->characteristics_id = $characteristic_id;
+                                        $characteristicsOptions->save();
+                                        $result = $this->setTranslation($brands, $characteristicsOptions->id, $type, $paramsCharacteristicsOptions);
+                                    }
+                                }
 
-                        //$characteristicsOptions = CharacteristicsOptions::findOne(['name'=> serialize($brands)]);
-//                        if (!isset($characteristicsOptions) && empty($characteristicsOptions)) {
-//                            $characteristicsOptions = new CharacteristicsOptions();
-//                        }
-//                        $characteristicsOptions->name = serialize($brands);
-//                        $characteristicsOptions->characteristics_id = 16;
-//                        $characteristicsOptions->save();
+                                $product->name = $names['field_name'][$language];
+                                $product->category_id = 1;
+                                $product->price = str_replace(',', '', $price);
+                                $product->vendor_code = $vendor_code;
+                                $product->currency_code = 'UAH';
+                                $product->status_stock = 1;
+                                $product->save();
 
-//                        $product->category_id = 1;
-//                        $product->name = $name;
-//                        $product->content = '';
-//                        $product->price = str_replace(',','',$price);
-//                        $product->keywords = $name;
-//                        $product->description = $name;
-//                        $product->lang = serialize($names);
-//                        $product->vendor_code = $vendor_code;
-//                        $product->status_stock = 1;
-//                        $product->save();
-                        $product = Product::findOne(['vendor_code' => $vendor_code]);
-                        $characteristicsOptions = CharacteristicsOptions::findOne(['name'=> serialize($brands)]);
-                        if(isset($product->id) && !empty($product->id)) {
-                            $characteristicsProducts = CharacteristicsProducts::find()->where(['product_id'=>$product->id])->andWhere(['characteristics_options_id'=>$characteristicsOptions->id])->one();
-                            if (!isset($characteristicsProducts) && empty($characteristicsProduct)) {
-                                $characteristicsProduct = new CharacteristicsProducts();
+                                $type = 'products';
+                                $translation_id = $product->id;
+                                $result = $this->setTranslation($names, $translation_id, $type, $paramsProducts);
+                                $characteristicsProducts = CharacteristicsProducts::findOne(['product_id' => $product->id, 'characteristics_options_id' => $characteristicsOptions->id]);
+                                if (!isset($characteristicsProducts) && empty($characteristicsProducts)) {
+                                    $characteristicsProducts = new CharacteristicsProducts();
+                                    $characteristicsProducts->characteristics_options_id = $characteristicsOptions->id;
+                                    $characteristicsProducts->product_id = $product->id;
+                                    $characteristicsProducts->save();
+                                }
+                            } else {
+                                $product->price = str_replace(',', '', $price);
+                                $product->save();
+
+                                $type = 'products';
+                                $translation_id = $product->id;
+                                $result = $this->setTranslation($names, $translation_id, $type, $paramsProducts);
                             }
-                            $characteristicsProduct->characteristics_options_id =$characteristicsOptions->id;
-                            $characteristicsProduct->product_id =$product->id;
-                            $characteristicsProduct->save();
                         }
                     }
                 }

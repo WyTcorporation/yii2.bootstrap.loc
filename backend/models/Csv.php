@@ -22,6 +22,11 @@ class Csv extends ActiveRecord
 {
     public $imageFile;
 
+    public static function tableName()
+    {
+        return 'products';
+    }
+
     public function rules()
     {
         return [

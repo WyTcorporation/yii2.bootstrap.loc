@@ -268,3 +268,10 @@ td.header-side {
 .float-right {
     float: right!important;
 }
+
+.control-label {
+    font-weight: 700;
+}
+#add-product-btn {
+    margin-top: 5px;
+}

@@ -10,14 +10,15 @@ namespace backend\modules\api\modules\v1\controllers;
 
 
 use backend\controllers\AppAdminController;
-use backend\models\CharacteristicsOptions;
+use backend\models\characteristics\CharacteristicsOptions;
+use backend\models\translations\Languages;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\helpers\Json;
 use Yii;
 use yii\web\Response;
 
-class SearchOptionsController extends Controller
+class SearchOptionsController extends AppAdminController
 
 {
 
@@ -40,7 +41,7 @@ class SearchOptionsController extends Controller
                     // restrict access to domains:
                     'Origin' => static::allowedDomains(),
                     'Access-Control-Allow-Origin' => ['*'],
-                    'Access-Control-Request-Method' => ['POST', 'GET'],
+                    'Access-Control-Request-Method' => ['POST', 'GET','PUT',"DELETE"],
                     'Access-Control-Allow-Credentials' => false,
                     'Access-Control-Max-Age' => 3600,                 // Cache (seconds)
                 ],
@@ -64,18 +65,26 @@ class SearchOptionsController extends Controller
 
             Yii::$app->response->format = Response::FORMAT_JSON;
 
-            $params = Yii::$app->params['languages'];
-
-            $language = Yii::$app->sourceLanguage;
-
             $characteristicsOptions = CharacteristicsOptions::find()->where(['characteristics_id'=>$data['id']])->all();
 
-            foreach ($characteristicsOptions as $characteristicsOption) {
-                $array[$characteristicsOption->id] = unserialize($characteristicsOption->name)[$language];
+            $language = Yii::$app->sourceLanguage;
+            $characteristicsOptionsTypeId = $this->getTypeBy('characteristics-options')->id;
+            $language_id = Languages::findOne(['code' => $language])->id;
+            $content_id = $this->getContentBy('name')->id;
+
+            foreach ($characteristicsOptions as $key => $characteristicsOption) {
+                $characteristicsOption->language_id = $language_id;
+                $characteristicsOption->type_id = $characteristicsOptionsTypeId;
+                $characteristicsOption->content_id = $content_id;
+                $characteristicsnames[$characteristicsOption->id] = $characteristicsOption->translation->content;
             }
 
+//            foreach ($characteristicsOptions as $characteristicsOption) {
+//                $array[$characteristicsOption->id] = unserialize($characteristicsOption->name)[$language];
+//            }
+
 //            return Json::encode(["code" => 200, "message" => "OK", 'data' => $data['id']]);
-            return $array;
+            return $characteristicsnames;
         } catch (\Exception $e) {
             $errors = ['message' => $e->getMessage(), 'code' => $e->getCode(), 'line' => $e->getLine(), 'file' => $e->getFile(), 'data' => \Yii::$app->request->get()];
             \Yii::error($errors, 'statistics-v1');

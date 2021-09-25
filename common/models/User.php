@@ -1,6 +1,8 @@
 <?php
 namespace common\models;
 
+use backend\models\Profile;
+use backend\models\user\UserProfile;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
@@ -16,18 +18,30 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
+ * @property string $phone
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
+ * @property string $password
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    //https://yii2.shop.loc/profile/password?id=1 Пример
+    const SCENARIO_CREATE = 'Отменить required';
+
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    public $password = "";
+
+    public function beforeSave($insert) {
+        if ($this->password) {
+            $this->setPassword($this->password);
+        }
+        return parent::beforeSave($insert);
+    }
 
     /**
      * {@inheritdoc}
@@ -37,13 +51,23 @@ class User extends ActiveRecord implements IdentityInterface
         return '{{%user}}';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            //create_at, update_at
+            'timestamp' => [
+                'class' => \yii\behaviors\TimestampBehavior::class,
+            ],
+            'ip' => [
+                'class' => \yii\behaviors\AttributeBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_ip',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'updated_ip',
+                ],
+                'value' => function ($event) {
+                    return Yii::$app->request->getUserIP();
+                },
+            ],
         ];
     }
 
@@ -53,11 +77,40 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
+//            ['phone', 'trim'],
+////            ['phone', 'required','except'=>[self::SCENARIO_CREATE]],
+//            ['phone', 'string', 'max' => 255],
+//            ['phone', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This phone has already been taken.'],
+//            ['phone', 'string', 'min' => 2, 'max' => 255],
+
+            ['username', 'trim'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'string', 'min' => 2, 'max' => 255],
+
+            ['email', 'trim'],
+            ['email', 'required','except'=>[self::SCENARIO_CREATE]],
+            ['email', 'email'],
+            ['email', 'string', 'max' => 255],
+            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+
+            //['password', 'string', 'min' => 6],
+
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
     }
-
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'phone' => 'Телефон',
+            'username' => 'Имя',
+            'email' => 'E-Mail',
+            'password' => 'Пароль',
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -72,6 +125,17 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+    }
+
+    /**
+     * Finds user by email
+     *
+     * @param string $email
+     * @return static|null
+     */
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -208,5 +272,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function getProfile()
+    {
+        return $this->hasOne(UserProfile::className(), ['user_id' => 'id']);
     }
 }

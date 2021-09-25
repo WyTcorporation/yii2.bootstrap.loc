@@ -13,7 +13,7 @@ AddDefaultCharset UTF-8
 #RewriteCond %{REQUEST_URI} ^/(api)
 #RewriteRule ^api(\/?.*)$ api/web/$1 [L]
 
-Options +FollowSymLinks
+#Options +FollowSymLinks
 IndexIgnore */*
 RewriteEngine on
 

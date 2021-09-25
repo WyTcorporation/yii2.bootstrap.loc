@@ -9,7 +9,11 @@
 use yii\bootstrap\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
-$this->title =  Html::encode(Yii::$app->name);
+
+/* @var $model  */
+/* @var $message  */
+
+$this->title = Yii::t('backend', 'Updating Products');
 ?>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -23,25 +27,17 @@ $this->title =  Html::encode(Yii::$app->name);
 ?>
 
 <div class="projects content__wrap">
-    <h1>Обновление  Товаров</h1>
     <div class="preloader" style="display: none">
         <div class="lds-dual-ring"></div>
     </div>
     <p><?= $message ?></p>
-    <div class="box">
+    <div class="">
         <div class="box__table projects">
-            <?= $form->field($model, 'imageFile')->fileInput()->label('Загрузить Продукты', ['class' => 'akb-csv']) ?>
-
-            <?= Html::submitButton('Загрузить', ['class' => 'btn btn-primary download-btn', 'id' => 'download-akb-csv', 'name' => 'download-akb-csv', 'value' => 'download-akb-csv', 'data-pjax' => 1]) ?>
-
-            <?php if (isset($send_file) && !empty($send_file)) : ?>
-                <?= Html::a('Скачать', '/backend/web/details.csv', ['id' => 'send_file', 'data-pjax' => 0,'class' => 'btn btn-primary download-btn']) ?>
-            <?php endif; ?>
-
-            <?php if (isset($send_zip) && !empty($send_zip)) : ?>
-                <?= Html::a('Скачать', '/backend/web/details.csv', ['id' => 'send_file', 'data-pjax' => 0,'class' => 'btn btn-primary download-btn']) ?>
-            <?php endif; ?>
+            <?= $form->field($model, 'imageFile')->fileInput()->label(Yii::t('backend/buttons', 'Download'), ['class' => 'akb-csv']) ?>
         </div>
+    </div>
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('backend/buttons', 'Download'), ['class' => 'btn btn-primary download-btn', 'id' => 'download-akb-csv', 'name' => 'download-akb-csv', 'value' => 'download-akb-csv', 'data-pjax' => 1]) ?>
     </div>
 </div>
 

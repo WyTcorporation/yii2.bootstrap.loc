@@ -11,11 +11,11 @@
 namespace backend\controllers;
 
 
+use backend\models\cupboard\Cupboard;
 use Yii;
 use yii\data\Pagination;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use backend\models\Cupboard;
 use yii\web\UploadedFile;
 
 class CupboardController extends AppAdminController

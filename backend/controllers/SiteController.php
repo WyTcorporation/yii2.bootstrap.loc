@@ -2,11 +2,13 @@
 
 namespace backend\controllers;
 
+
+use backend\models\LoginForm;
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
+
 
 /**
  * Site controller
@@ -20,27 +22,26 @@ class SiteController extends AppAdminController
         return $this->isModer($actions);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
+    public function actionError()
     {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-        ];
-    }
+        if (Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+        $exception = Yii::$app->errorHandler->exception;
 
+        if ($exception !== null) {
+            return $this->render('error', ['exception' => $exception]);
+        }
+    }
     /**
      * Displays homepage.
      *
      * @return string
      */
 
-
     public function actionIndex()
     {
+
         return $this->render('index');
     }
 

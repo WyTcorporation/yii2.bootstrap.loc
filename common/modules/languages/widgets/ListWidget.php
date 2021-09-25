@@ -16,7 +16,7 @@ class ListWidget extends Widget{
         //Создаем массив ссылок всех языков с соответствующими GET параметрами
         $array_lang = [];
         foreach (Yii::$app->getModule('languages')->languages as $key => $value){
-            $array_lang += [$value => Html::a($key, ['languages/default/index', 'lang' => $value])];
+            $array_lang += [$value => '<li>'. Html::a(strtoupper($value), ['languages/default/index', 'lang' => $value],['class'=>'btn btn-link btn-block language-select']).'</li>'];
         }
 
         //ссылку на текущий язык не выводим

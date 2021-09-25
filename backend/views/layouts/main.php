@@ -5,6 +5,7 @@ use yii\helpers\Html;
 /* @var $content string */
 
 
+
 if (Yii::$app->controller->action->id === 'login') { 
 /**
  * Do not use this code in your template. Remove it. 

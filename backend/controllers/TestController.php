@@ -2,7 +2,7 @@
 
 namespace backend\controllers;
 
-use app\models\Country;
+
 use Yii;
 use app\models\EntryForm;
 use yii\bootstrap\ActiveForm;
@@ -220,18 +220,18 @@ class TestController extends AppAdminController
 
         //Удажение данных
 
-        $model = Country::findOne('UA');
+        //$model = Country::findOne('UA');
 
-        if(!$model) {
-            throw new NotFoundHttpException('Country not found');
-        }
-
-        if ($model->delete()) {
-            Yii::$app->session->setFlash('success', 'Данные удалены');
-            return $this->refresh();
-        }
-
-        return $this->render('create', compact('model'));
+//        if(!$model) {
+//            throw new NotFoundHttpException('Country not found');
+//        }
+//
+//        if ($model->delete()) {
+//            Yii::$app->session->setFlash('success', 'Данные удалены');
+//            return $this->refresh();
+//        }
+//
+//        return $this->render('create', compact('model'));
 
     }
 }

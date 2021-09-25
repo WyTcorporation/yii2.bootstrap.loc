@@ -12,10 +12,11 @@ class AppAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
+        'css/fontawesome.css',
         'css/site.css',
-        'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
     ];
     public $js = [
+        'https://kit.fontawesome.com/1534e31081.js',
         'js/script.js',
     ];
     public $depends = [

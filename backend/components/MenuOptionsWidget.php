@@ -7,9 +7,10 @@
  */
 
 namespace backend\components;
+use backend\models\characteristics\Characteristics;
 use Yii;
 use yii\base\Widget;
-use backend\models\Characteristics;
+
 
 class MenuOptionsWidget extends Widget
 {

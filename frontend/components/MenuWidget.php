@@ -7,9 +7,13 @@
  */
 
 namespace frontend\components;
+
+use backend\models\translations\Content;
+use backend\models\translations\Languages;
+use backend\models\translations\Type;
 use Yii;
 use yii\base\Widget;
-use frontend\models\Category;
+use backend\models\categories\Categories;
 
 class MenuWidget extends Widget
 {
@@ -23,10 +27,11 @@ class MenuWidget extends Widget
     public function init()
     {
         parent::init();
+
         if ($this->template === null) {
             $this->template = 'menu';
         }
-        $this->params = Yii::$app->params['languages'];
+
         $this->template .= '.php';
     }
 
@@ -40,11 +45,31 @@ class MenuWidget extends Widget
             }
         }
 
-        $this->data = Category::find()->indexBy('id')->asArray()->all();
+        $language = Yii::$app->language;
+
+        $language_id = Languages::findOne(['code'=>$language])->id;
+
+        $type_id = Type::findOne(['type' => 'categories'])->id;
+
+        $content_id = Content::findOne(['content' => 'name'])->id;
+
+        //$this->data =  Categories::find()->indexBy('id')->asArray()->all();
+        $datas = Categories::find()->indexBy('id')->all();
+        foreach($datas as $data) {
+            $data->type_id = $type_id;
+            $data->language_id = $language_id;
+            $data->content_id = $content_id;
+            $data->name = trim($data->translation->content);
+            $categories[$data->id]['id'] = $data->id;
+            $categories[$data->id]['name'] = trim($data->translation->content);
+            $categories[$data->id]['parent_id'] = $data->parent_id;
+            $categories[$data->id]['slug'] = $data->slug;
+        }
+        $this->data = $categories;
         $this->tree = $this->getTree();
         $this->menuHtml = $this->getMenuHtml($this->tree);
 
-        //set cache
+//        //set cache
         if($this->tree == 'menu.php'){
             //set cache 1 minute
             Yii::$app->cache->set('menu',$this->menuHtml,60);
@@ -68,16 +93,16 @@ class MenuWidget extends Widget
         return $tree;
     }
 
-    protected function getMenuHtml($tree)
+    protected function getMenuHtml($tree,$tab = '')
     {
         $str = '';
         foreach ($tree as $category) {
-            $str .= $this->catToTemplate($category);
+            $str .= $this->catToTemplate($category,$tab);
         }
         return $str;
     }
 
-    protected function catToTemplate($category)
+    protected function catToTemplate($category,$tab)
     {
         ob_start();
         include __DIR__ . '/menu_template/' . $this->template;

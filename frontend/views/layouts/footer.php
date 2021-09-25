@@ -12,11 +12,24 @@ use yii\helpers\Html;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
 
-$language = Yii::$app->language;
+use backend\models\pages\Pages;
+
+
 $params = Yii::$app->params['languages'];
 
+$pages = Pages::find()->where(['active' => 1, 'status' => 1])->all();
+$language = \backend\models\translations\Languages::findOne(['code' => Yii::$app->language]);
+$language_id = $language->id;
+$type_id = \backend\models\translations\Type::findOne(['type' => 'pages']);
+$content_id = \backend\models\translations\Content::findOne(['content' => 'name']);
+
+$session = Yii::$app->session;
+$contacts = $session['contacts'][0];
+
+$language = Yii::$app->language;
+
 if (count($params) > 1) {
-    if($language != 'ua') {
+    if ($language != 'ua') {
         $url = '/' . $language . '/cart/view';
     } else {
         $url = '/cart/view';
@@ -27,170 +40,91 @@ if (count($params) > 1) {
 
 ?>
 
-<footer id="footer"><!--Footer-->
-    <div class="footer-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-2">
-                    <div class="companyinfo">
-                        <h2><span>e</span>-shopper</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit,sed do eiusmod tempor</p>
-                    </div>
+<footer style="margin-top: 0px;">
+    <div id="footer_btn_top"></div>
+    <div class="footer_line"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-xs-12 col-sm-3 col-md-3">
+                <h5><?= Yii::t('frontend', 'Information'); ?></h5>
+                <div class="footer_text_links">
+                    <?php if (isset($pages) && !empty($pages)) : ?>
+                        <?php foreach ($pages as $page) : ?>
+                            <?php
+                            $page->language_id = $language_id;
+                            $page->type_id = $type_id;
+                            $page->content_id = $content_id;
+                            $name = $page->translation;
+                            ?>
+                            <a href="<?= Url::to(['/pages/index', 'slug' => $page->slug]) ?>"><?=$name->content?></a><br>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
-                <div class="col-sm-7">
-                    <div class="col-sm-3">
-                        <div class="video-gallery text-center">
-                            <a href="#">
-                                <div class="iframe-img">
-                                    <img src="/images/home/iframe1.png" alt=""/>
-                                </div>
-                                <div class="overlay-icon">
-                                    <i class="fa fa-play-circle-o"></i>
-                                </div>
-                            </a>
-                            <p>Circle of Hands</p>
-                            <h2>24 DEC 2014</h2>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div class="video-gallery text-center">
-                            <a href="#">
-                                <div class="iframe-img">
-                                    <img src="/images/home/iframe2.png" alt=""/>
-                                </div>
-                                <div class="overlay-icon">
-                                    <i class="fa fa-play-circle-o"></i>
-                                </div>
-                            </a>
-                            <p>Circle of Hands</p>
-                            <h2>24 DEC 2014</h2>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div class="video-gallery text-center">
-                            <a href="#">
-                                <div class="iframe-img">
-                                    <img src="/images/home/iframe3.png" alt=""/>
-                                </div>
-                                <div class="overlay-icon">
-                                    <i class="fa fa-play-circle-o"></i>
-                                </div>
-                            </a>
-                            <p>Circle of Hands</p>
-                            <h2>24 DEC 2014</h2>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-3">
-                        <div class="video-gallery text-center">
-                            <a href="#">
-                                <div class="iframe-img">
-                                    <img src="/images/home/iframe4.png" alt=""/>
-                                </div>
-                                <div class="overlay-icon">
-                                    <i class="fa fa-play-circle-o"></i>
-                                </div>
-                            </a>
-                            <p>Circle of Hands</p>
-                            <h2>24 DEC 2014</h2>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-3 mobi-padding-rigth0">
+                <h5><?= Yii::t('frontend', 'Contacts'); ?></h5>
+                <div class="footer_text">
+                    <?php if (isset($contacts['phones']) && !empty($contacts['phones'])): ?>
+                        <?php for ($x=0;$x<=count($contacts['phones']);$x++) :?>
+                            <span style="font-family: Tahoma; font-size: 14px;"><?= $contacts['phones'][$x] ?></span>
+                            <br style="font-family: Tahoma;">
+                        <?php endfor; ?>
+                    <?php endif; ?>
                 </div>
-                <div class="col-sm-3">
-                    <div class="address">
-                        <img src="/images/home/map.png" alt=""/>
-                        <p>505 S Atlantic Ave Virginia Beach, VA(Virginia)</p>
-                    </div>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-3">
+                <h5><?= Yii::t('frontend', 'Schedule'); ?></h5>
+                <div class="footer_text_shedule">
+                    <b style="font-family: Tahoma;">
+                        <?php if (isset($contacts['date']) && !empty($contacts['date'])): ?>
+                            <?php $y=0; ?>
+                            <?php foreach($contacts['date'] as $key=> $date) :?>
+                                <span><?= $key ?> <?= $date ?></span>
+                                <?php $y++; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </b><br>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-3 col-md-3 mobi-padding-rigth0">
+                <h5><?= Yii::t('frontend', 'social'); ?></h5>
+                <div id="footer_soc_mereji">
+                    <a href="<?= Url::to('https://www.facebook.com/') ?>" rel="nofollow noopener" id="footer_facebook"
+                       target="_blank"></a>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="footer-widget">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-2">
-                    <div class="single-widget">
-                        <h2>Service</h2>
-                        <ul class="nav nav-pills nav-stacked">
-                            <li><a href="#">Online Help</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Order Status</a></li>
-                            <li><a href="#">Change Location</a></li>
-                            <li><a href="#">FAQ’s</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="single-widget">
-                        <h2>Quock Shop</h2>
-                        <ul class="nav nav-pills nav-stacked">
-                            <li><a href="#">T-Shirt</a></li>
-                            <li><a href="#">Mens</a></li>
-                            <li><a href="#">Womens</a></li>
-                            <li><a href="#">Gift Cards</a></li>
-                            <li><a href="#">Shoes</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="single-widget">
-                        <h2>Policies</h2>
-                        <ul class="nav nav-pills nav-stacked">
-                            <li><a href="#">Terms of Use</a></li>
-                            <li><a href="#">Privecy Policy</a></li>
-                            <li><a href="#">Refund Policy</a></li>
-                            <li><a href="#">Billing System</a></li>
-                            <li><a href="#">Ticket System</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <div class="single-widget">
-                        <h2>About Shopper</h2>
-                        <ul class="nav nav-pills nav-stacked">
-                            <li><a href="#">Company Information</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Store Location</a></li>
-                            <li><a href="#">Affillate Program</a></li>
-                            <li><a href="#">Copyright</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-sm-3 col-sm-offset-1">
-                    <div class="single-widget">
-                        <h2>About Shopper</h2>
-                        <form action="#" class="searchform">
-                            <input type="text" placeholder="Your email address"/>
-                            <button type="submit" class="btn btn-default"><i class="fa fa-arrow-circle-o-right"></i>
-                            </button>
-                            <p>Get the most recent updates from <br/>our site and be updated your self...</p>
-                        </form>
-                    </div>
-                </div>
-
+    <div class="footer_line1"></div>
+    <div class="container">
+        <div class="row footer_powered_div">
+            <div class="col-xs-6 col-sm-6 text-left">
+                Copyright &copy; <?= Html::encode(Yii::$app->name) ?>  2011-<?= date('Y') ?> <a target="_blank" href="http://lockit.com.ua">LockIT Studio</a>
+            </div>
+            <div class="col-sm-2 hidden-xs hidden-sm">
+                &nbsp;
+            </div>
+            <div class="col-sm-2 hidden-xs hidden-sm">
+                &nbsp;
+            </div>
+            <div class="col-md-2 text-left hidden-xs hidden-sm">
+            </div>
+            <div class="col-sm-3 visible-sm">
+                &nbsp;
+            </div>
+            <div class="col-xs-6 col-sm-3 text-left visible-xs visible-sm">
             </div>
         </div>
     </div>
-
-    <div class="footer-bottom">
-        <div class="container">
-            <div class="row">
-                <p class="pull-left">Copyright © <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?> E-SHOPPER
-                    Inc. All rights reserved.</p>
-                <p class="pull-right">Designed by <span><a target="_blank"
-                                                           href="http://lockit.com">lockit.com</a></span></p>
-            </div>
-        </div>
-    </div>
-
-</footer><!--/Footer-->
+</footer>
+<a href="#top" id="scroller" title="Scroll Back to Top"
+     style="position: fixed; bottom: 175px; right: 3px; opacity: 1; cursor: pointer;"><img
+            src="/images/top-normal.png"
+            style="width:53px; height:53px; border:0px solid #DDDDDD;"></a>
 <?php
 //Модальное окно
 Modal::begin([
-    'header' => '<h2>Корзина</h2>',
+    'header' => '<h2>'.Yii::t('frontend', 'Basket').'</h2>',
     'id' => 'cart',
 //    'toggleButton' => [
 //        'label' => 'click me',
@@ -198,9 +132,9 @@ Modal::begin([
 //        'class' => 'btn btn-success',
 //    ],
     'size' => 'modal-lg',
-    'footer' => '<button type="button" class="btn btn-default">Продолжить покупки</button>
-<button type="button" class="btn btn-danger" onclick="clearCart()">Очистить корзину</button>
-<a href="'.Url::to($url).'" class="btn btn-success">Оформить заказ</a>',
+    'footer' => '<button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default">'.Yii::t('frontend/buttons', 'ContinueShoppingButton').'</button>
+<button type="button" class="btn btn-danger" onclick="clearCart()">'.Yii::t('frontend/buttons', 'EmptyTrashButton').'</button>
+<a href="' . Url::to($url) . '" class="btn btn-success">'.Yii::t('frontend/buttons', 'CheckoutButton').'</a>',
 ]);
 
 echo 'Say hello...';
@@ -211,7 +145,7 @@ Modal::end();
 <?php
 //Модальное окно
 Modal::begin([
-    'header' => '<h2>WishList</h2>',
+    'header' => '<h2>'.Yii::t('frontend', 'wishlist').'</h2>',
     'id' => 'wishlist',
 //    'toggleButton' => [
 //        'label' => 'click me',
@@ -219,10 +153,28 @@ Modal::begin([
 //        'class' => 'btn btn-success',
 //    ],
     'size' => 'modal-lg',
-    'footer' => '<button  data-dismiss="modal" aria-hidden="true" type="button" class="btn btn-default">Продолжить покупки</button>',
+    'footer' => '<button  data-dismiss="modal" aria-hidden="true" type="button" class="btn btn-default">'.Yii::t('frontend/buttons', 'ContinueShoppingButton').'</button>',
 ]);
 
 echo 'Say hello...';
+
+Modal::end();
+?>
+
+<?php
+//Модальное окно
+Modal::begin([
+    'header' => '<h2>'.Yii::t('frontend', 'Payment').'</h2>',
+    'headerOptions' => ['id' => 'modalHeader'],
+    'id' => 'payment',
+//    'toggleButton' => [
+//        'label' => 'click me',
+//        'tag' => 'button',
+//        'class' => 'btn btn-success',
+//    ],
+    'size' => 'modal-lg',
+    'footer' => '<button type="button" class="btn btn-default close" data-dismiss="modal" aria-label="Close">'.Yii::t('frontend/buttons', 'closeButton').'</button>',
+]);
 
 Modal::end();
 ?>

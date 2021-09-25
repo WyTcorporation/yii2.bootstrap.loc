@@ -24,10 +24,6 @@ class RbacStartController extends Controller
         $dashboard->description = 'Админ панель';
         $auth->add($dashboard);
 
-        $dashboard = $auth->createPermission('adminPanel');
-        $dashboard->description = 'Админ панель';
-        $auth->add($dashboard);
-
         //Добавляем роли
         $user = $auth->createRole('user');
         $user->description = 'Пользователь';
@@ -37,20 +33,27 @@ class RbacStartController extends Controller
         $moder->description = 'Модератор';
         $auth->add($moder);
 
-        //Добавляем потомков
-        $auth->addChild($moder, $user);
-        $auth->addChild($moder, $dashboard);
-
         $admin = $auth->createRole('admin');
         $admin->description = 'Администратор';
         $auth->add($admin);
+
+        $superAdmin = $auth->createRole('superAdmin');
+        $superAdmin->description = 'Разработчик';
+        $auth->add($superAdmin);
+
+        //Добавляем потомков
+        $auth->addChild($moder, $user);
+        $auth->addChild($moder, $dashboard);
         $auth->addChild($admin, $moder);
+        $auth->addChild($superAdmin, $admin);
 
         // Назначаем роль admin пользователю с ID 1
-        $auth->assign($admin, 1);
+        $auth->assign($superAdmin, 1);
 
         // Назначаем роль moder пользователю с ID 2
-        $auth->assign($moder, 2);
+        $auth->assign($admin, 2);
+        // Назначаем роль moder пользователю с ID 3
+        $auth->assign($moder, 3);
     }
 
 }

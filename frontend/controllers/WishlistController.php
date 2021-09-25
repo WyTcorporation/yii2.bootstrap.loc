@@ -8,11 +8,13 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Wishlist;
-use frontend\models\WishlistItems;
+use backend\models\translations\Content;
+use backend\models\translations\Languages;
+use backend\models\wishlist\Wishlist;
+use backend\models\wishlist\WishlistItems;
 use Yii;
 use frontend\controllers\AppController;
-use frontend\models\Product;
+use backend\models\products\Products;
 
 class WishlistController extends AppController
 {
@@ -21,10 +23,12 @@ class WishlistController extends AppController
     {
 
         if (Yii::$app->user->isGuest) {
-            return $this->redirect('login');
+            Yii::$app->session->setFlash('danger', Yii::t('frontend/flash', 'Please login or register first!'));
+            return $this->redirect('/login');
         }
 
-        $product = Product::findOne($id);
+
+        $product = Products::findOne($id);
         if (empty($product)) {
             return false;
         }
@@ -33,6 +37,11 @@ class WishlistController extends AppController
         if (!Yii::$app->request->isAjax) {
             return $this->redirect(Yii::$app->request->referrer);
         }
+        //Params
+        $language = Yii::$app->language;
+        $language_id = Languages::findOne(['code' => $language])->id;
+        $content_id = Content::findOne(['content' => 'name'])->id;
+        $type_id = $this->getType('products')->id;
 
 
         $user_id = Yii::$app->user->id;
@@ -41,26 +50,30 @@ class WishlistController extends AppController
 
         if (!isset($wishlist) && empty($wishlist)) {
             $wishlist = new Wishlist();
-            $wishlist->user_id = $user_id;
-            $wishlist->save();
         }
+        $wishlist->user_id = $user_id;
+        $wishlist->save();
 
         $wishlist_item = WishlistItems::findOne(['wishlist_id' => $wishlist->id, 'product_id' => $product->id]);
 
         if (empty($wishlist_item)) {
             $wishlist_item = new WishlistItems();
-            $wishlist_item->wishlist_id = $wishlist->id;
-            $wishlist_item->product_id = $product->id;
-            $wishlist_item->name = $product->name;
-            $wishlist_item->price = $product->price;
-            $wishlist_item->img = $product->img;
-            $wishlist_item->slug = $product->slug;
-            $wishlist_item->save();
         }
+
+        $product->language_id = $language_id;
+        $product->content_id = $content_id;
+        $product->type_id = $type_id;
+
+        $wishlist_item->wishlist_id = $wishlist->id;
+        $wishlist_item->product_id = $product->id;
+        $wishlist_item->name = $product->translation->content;
+        $wishlist_item->save();
+
 
         $this->layout = false;
 
-        return $this->render('wishlist-modal', compact('product'));
+        $name = $product->translation->content;
+        return $this->render('wishlist-modal', compact('name'));
     }
 
     public function actionView()
@@ -69,14 +82,19 @@ class WishlistController extends AppController
         $this->setMeta( null, null, null,'Магазин | Список пожеланий');
 
         if (Yii::$app->user->isGuest) {
-            return $this->redirect('login');
+            return $this->redirect('/login');
         }
+        //Params
+        $language = Yii::$app->language;
+        $language_id = Languages::findOne(['code' => $language])->id;
+        $content_id = Content::findOne(['content' => 'name'])->id;
+        $type_id = $this->getType('products')->id;
 
         $user_id = Yii::$app->user->id;
 
         $wishlist = Wishlist::find()->with('wishlistItems')->where(['user_id' => $user_id])->one();
 
-        return $this->render('view',compact('wishlist'));
+        return $this->render('view',compact('wishlist','language_id','content_id','type_id'));
     }
 
     public function actionDeleteItem($id)
